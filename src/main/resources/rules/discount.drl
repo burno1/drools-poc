@@ -1,15 +1,11 @@
 import com.fernandes.drools.poc.domain.OrderRequest;
+import com.fernandes.drools.poc.domain.SumOfOrders;
 
 rule "Discount for CARD payment above 10000"
     when
-        orderObject : OrderRequest( paymentType=="CARD" && totalPrice > 10000 );
+        $orderFlow : OrderRequest($orderId: orderId,$paymentType: paymentType, $totalPrice: totalPrice, $discount: discount)
+        not OrderRequest(totalPrice < $totalPrice)
     then
-        orderObject.setDiscount(15);
-end;
-
-rule "Discount for CARD payment below 10000"
-    when
-        orderObject : OrderRequest( paymentType=="CARD" && totalPrice > 5000 && totalPrice < 10000 );
-    then
-        orderObject.setDiscount(5);
+        System.out.println("orders: "+$paymentType+" :: "+$totalPrice);
+        retract($orderFlow)
 end;
